@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { loadData } = require('../utils/gamenights');
 const { getBreak } = require('../utils/breaks');
+const { getActiveWarns } = require('../utils/warns');
 
 module.exports = {
   data: {
@@ -26,6 +27,11 @@ module.exports = {
       ? `🟡 On break until <t:${Math.floor(breakEndsAt / 1000)}:F> (<t:${Math.floor(breakEndsAt / 1000)}:R>)`
       : '🟢 Not on break';
 
+    const activeWarns = getActiveWarns(user.id);
+    const warnsText = activeWarns.length === 0
+      ? 'None'
+      : activeWarns.map((w, i) => `${i + 1}. ${w.reason} _(expires <t:${Math.floor(w.expiresAt / 1000)}:R>)_`).join('\n');
+
     const embed = new EmbedBuilder()
       .setColor(member.displayHexColor || '#5865F2')
       .setTitle(`${user.username}'s Profile`)
@@ -35,6 +41,7 @@ module.exports = {
         { name: 'Rank', value: highestRole, inline: true },
         { name: 'Gamenights', value: `${gamenights}`, inline: true },
         { name: 'Break Status', value: breakStatus, inline: false },
+        { name: `Warns (${activeWarns.length})`, value: warnsText, inline: false },
       )
       .setFooter({ text: `User ID: ${user.id}` });
 
