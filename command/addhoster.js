@@ -21,7 +21,7 @@ module.exports = {
         .setColor('#E67E22')
         .setAuthor({ name: user.username, iconURL: user.displayAvatarURL({ dynamic: true }) })
         .setTitle('ℹ️ Already Listed')
-        .setDescription(`${user} is already on the hoster leaderboard with **${data[user.id]} GN**.`)
+        .setDescription(`${user} is already on the hoster database **${data[user.id]} GN**.`)
         .setTimestamp();
       return message.reply({ embeds: [alreadyEmbed] });
     }
@@ -37,7 +37,7 @@ module.exports = {
       .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
       .setTitle('🎉 New Hoster Added')
       .setDescription(
-        `${user} has officially joined the hoster leaderboard!\n` +
+        `${user} has officially joined the hoster database!\n` +
         `Time to start hosting and racking up those GNs. 🚀`
       )
       .addFields(
