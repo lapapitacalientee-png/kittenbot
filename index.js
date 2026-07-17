@@ -12,17 +12,17 @@ const client = new Client({
   ],
 });
 
-// Cargar comandos
+// Load commands
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'command');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
   const command = require(path.join(commandsPath, file));
-  client.commands.set(command.data.name, command.data.name);
+  client.commands.set(command.data.name, command);
 }
 
-// Cargar eventos
+// Load events
 const eventsPath = path.join(__dirname, 'event');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
