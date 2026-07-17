@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const { askGemini } = require('../utils/gemini');
-const { getUsage, incrementUsage, DAILY_LIMIT } = require('../utils/aiLimit');
+const { getUsage, incrementUsage, getCooldown, DAILY_LIMIT } = require('../utils/aiLimit');
 
 const SYSTEM_PROMPT = `You are a helpful general-purpose assistant for a Discord roleplay hosting server. Answer questions clearly and concisely.`;
 
@@ -9,6 +9,14 @@ module.exports = {
     name: 'ia',
   },
   async execute(message, args) {
+    const cooldown = getCooldown(message.author.id);
+    if (cooldown.onCooldown) {
+      const secondsLeft = Math.ceil(cooldown.remainingMs / 1000);
+      const minutes = Math.floor(secondsLeft / 60);
+      const seconds = secondsLeft % 60;
+      return message.reply(`⏳ You're on cooldown. Try again in **${minutes}m ${seconds}s**.`);
+    }
+
     const question = args.join(' ');
     if (!question) {
       return message.reply('❌ You must ask a question. Usage: `j?IA <question>`');
