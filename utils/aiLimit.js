@@ -3,6 +3,7 @@ const path = require('path');
 
 const dataPath = path.join(__dirname, '..', 'data', 'ai-limit.json');
 const DAILY_LIMIT = 90;
+const COOLDOWN_MS = 5 * 60 * 1000;
 
 function loadLimits() {
   if (!fs.existsSync(dataPath)) {
@@ -32,18 +33,35 @@ function getUsage(userId) {
   return { used: entry.count, remaining: DAILY_LIMIT - entry.count };
 }
 
+function getCooldown(userId) {
+  const data = loadLimits();
+  const entry = data[userId];
+
+  if (!entry || !entry.lastUsed) {
+    return { onCooldown: false, remainingMs: 0 };
+  }
+
+  const elapsed = Date.now() - entry.lastUsed;
+  if (elapsed >= COOLDOWN_MS) {
+    return { onCooldown: false, remainingMs: 0 };
+  }
+
+  return { onCooldown: true, remainingMs: COOLDOWN_MS - elapsed };
+}
+
 function incrementUsage(userId) {
   const data = loadLimits();
   const today = todayKey();
 
   if (!data[userId] || data[userId].date !== today) {
-    data[userId] = { date: today, count: 1 };
+    data[userId] = { date: today, count: 1, lastUsed: Date.now() };
   } else {
     data[userId].count++;
+    data[userId].lastUsed = Date.now();
   }
 
   saveLimits(data);
   return DAILY_LIMIT - data[userId].count;
 }
 
-module.exports = { getUsage, incrementUsage, DAILY_LIMIT };
+module.exports = { getUsage, incrementUsage, getCooldown, DAILY_LIMIT, COOLDOWN_MS };
