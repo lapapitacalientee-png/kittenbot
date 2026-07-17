@@ -22,5 +22,6 @@ module.exports = {
 
     const total = addGamenights(user.id, amount);
     message.reply(`✅ Added ${amount} gamenight(s) to ${user.username}. Total: **${total}**`);
+    message.channel.send(`💡 If you attended this gamenight, remember you can rate it with \`j?rate @${user.username} <0-10>\`!`);
   },
 };
