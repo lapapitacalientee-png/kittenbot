@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const { askGemini } = require('../utils/gemini');
-const { getUsage, incrementUsage, DAILY_LIMIT } = require('../utils/aiLimit');
+const { getUsage, incrementUsage, getCooldown, DAILY_LIMIT } = require('../utils/aiLimit');
 
 const SYSTEM_PROMPT = `You are an assistant that suggests historical roleplay (RP) hosting ideas for a Discord roleplay server. 
 When asked what to host, suggest a historical event, era, or war (e.g. World War 2, the Roman Empire, the Cold War, etc.) and briefly explain why it would make a fun RP. 
@@ -11,6 +11,14 @@ module.exports = {
     name: 'whatrp',
   },
   async execute(message, args) {
+    const cooldown = getCooldown(message.author.id);
+    if (cooldown.onCooldown) {
+      const secondsLeft = Math.ceil(cooldown.remainingMs / 1000);
+      const minutes = Math.floor(secondsLeft / 60);
+      const seconds = secondsLeft % 60;
+      return message.reply(`⏳ You're on cooldown. Try again in **${minutes}m ${seconds}s**.`);
+    }
+
     const question = args.join(' ');
     if (!question) {
       return message.reply('❌ You must ask a question. Usage: `j?whatrp <question>`');
