@@ -1,3 +1,4 @@
+const { EmbedBuilder } = require('discord.js');
 const { getElixir, costForGamenights, spendElixir } = require('../utils/elixir');
 const { addGamenights } = require('../utils/gamenights');
 
@@ -13,15 +14,41 @@ module.exports = {
     }
 
     const cost = costForGamenights(amount);
-    const balance = getElixir(message.author.id);
+    const balanceBefore = getElixir(message.author.id);
 
-    if (balance < cost) {
-      return message.reply(`❌ Not enough elixir. You have **${balance} 🍥**, but cashing out ${amount} gamenight(s) costs **${cost} 🍥**.`);
+    if (balanceBefore < cost) {
+      const embed = new EmbedBuilder()
+        .setColor('#E74C3C')
+        .setAuthor({ name: message.author.username, iconURL: message.author.displayAvatarURL({ dynamic: true }) })
+        .setTitle('❌ Cashout Failed')
+        .setDescription(`Not enough elixir to cash out **${amount} gamenight(s)**.`)
+        .addFields(
+          { name: 'Required', value: `${cost} 🍥`, inline: true },
+          { name: 'Your Balance', value: `${balanceBefore} 🍥`, inline: true },
+          { name: 'Missing', value: `${cost - balanceBefore} 🍥`, inline: true },
+        )
+        .setTimestamp();
+      return message.reply({ embeds: [embed] });
     }
 
     const remaining = spendElixir(message.author.id, cost);
-    const newTotal = addGamenights(message.author.id, amount);
+    const newGnTotal = addGamenights(message.author.id, amount);
 
-    message.reply(`✅ Cashed out **${amount} gamenight(s)** for **${cost} 🍥**. Remaining elixir: **${remaining} 🍥**. Total gamenights: **${newTotal}**`);
+    const embed = new EmbedBuilder()
+      .setColor('#2ECC71')
+      .setAuthor({ name: message.author.username, iconURL: message.author.displayAvatarURL({ dynamic: true }) })
+      .setTitle('✅ Cashout Successful')
+      .setDescription(`Exchanged **${cost} 🍥** for **${amount} gamenight(s)**.`)
+      .addFields(
+        { name: '🍥 Elixir Spent', value: `${cost}`, inline: true },
+        { name: '🍥 Elixir Remaining', value: `${remaining}`, inline: true },
+        { name: '\u200B', value: '\u200B', inline: true },
+        { name: '🎮 Gamenights Gained', value: `+${amount}`, inline: true },
+        { name: '🎮 Total Gamenights', value: `${newGnTotal}`, inline: true },
+      )
+      .setFooter({ text: 'Rate 2.5 elixir per gamenight' })
+      .setTimestamp();
+
+    message.reply({ embeds: [embed] });
   },
 };
