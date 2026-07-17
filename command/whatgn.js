@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const { askGemini } = require('../utils/gemini');
-const { getUsage, incrementUsage, DAILY_LIMIT } = require('../utils/aiLimit');
+const { getUsage, incrementUsage, getCooldown, DAILY_LIMIT } = require('../utils/aiLimit');
 
 const SYSTEM_PROMPT = `You are an assistant that suggests what Roblox game to host a gamenight (GN) in for a Discord server.
 You must ONLY suggest games from this approved list, never anything outside it:
@@ -32,7 +32,13 @@ module.exports = {
     name: 'whatgn',
   },
   async execute(message, args) {
-    console.log('KEY LOADED:', process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.slice(0, 10) + '...' : 'UNDEFINED');
+    const cooldown = getCooldown(message.author.id);
+    if (cooldown.onCooldown) {
+      const secondsLeft = Math.ceil(cooldown.remainingMs / 1000);
+      const minutes = Math.floor(secondsLeft / 60);
+      const seconds = secondsLeft % 60;
+      return message.reply(`⏳ You're on cooldown. Try again in **${minutes}m ${seconds}s**.`);
+    }
 
     const question = args.join(' ');
     if (!question) {
