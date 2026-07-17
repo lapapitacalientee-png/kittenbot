@@ -1,4 +1,4 @@
-const PREFIX = '!';
+const PREFIX = 'j?';
 
 module.exports = {
   name: 'messageCreate',
