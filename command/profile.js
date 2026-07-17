@@ -2,6 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const { loadData } = require('../utils/gamenights');
 const { getBreak } = require('../utils/breaks');
 const { getActiveWarns } = require('../utils/warns');
+const { getAverage } = require('../utils/ratings');
 
 module.exports = {
   data: {
@@ -32,6 +33,11 @@ module.exports = {
       ? 'None'
       : activeWarns.map((w, i) => `${i + 1}. ${w.reason} _(expires <t:${Math.floor(w.expiresAt / 1000)}:R>)_`).join('\n');
 
+    const ratingData = getAverage(user.id);
+    const ratingText = ratingData
+      ? `⭐ ${ratingData.average.toFixed(1)}/10 (${ratingData.count} rating${ratingData.count !== 1 ? 's' : ''})`
+      : 'No ratings yet';
+
     const embed = new EmbedBuilder()
       .setColor(member.displayHexColor || '#5865F2')
       .setTitle(`${user.username}'s Profile`)
@@ -40,6 +46,7 @@ module.exports = {
         { name: 'Joined Server', value: `<t:${Math.floor(member.joinedTimestamp / 1000)}:F>`, inline: false },
         { name: 'Rank', value: highestRole, inline: true },
         { name: 'Gamenights', value: `${gamenights}`, inline: true },
+        { name: 'Rating', value: ratingText, inline: true },
         { name: 'Break Status', value: breakStatus, inline: false },
         { name: `Warns (${activeWarns.length})`, value: warnsText, inline: false },
       )
