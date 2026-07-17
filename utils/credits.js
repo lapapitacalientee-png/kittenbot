@@ -23,6 +23,14 @@ function addCredits(userId, amount) {
   return getTotal(userId);
 }
 
+function removeCredits(userId, amount) {
+  const data = loadCredits();
+  if (!data[userId]) data[userId] = [];
+  data[userId].push({ amount: -amount, date: Date.now() });
+  saveCredits(data);
+  return getTotal(userId);
+}
+
 function getTotal(userId) {
   const data = loadCredits();
   const history = data[userId] || [];
@@ -34,4 +42,4 @@ function getHistory(userId) {
   return data[userId] || [];
 }
 
-module.exports = { loadCredits, saveCredits, addCredits, getTotal, getHistory };
+module.exports = { loadCredits, saveCredits, addCredits, removeCredits, getTotal, getHistory };
