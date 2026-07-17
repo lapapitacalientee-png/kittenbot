@@ -1,4 +1,4 @@
-const { PermissionsBitField } = require('discord.js');
+const { PermissionsBitField, EmbedBuilder } = require('discord.js');
 const { setBreak } = require('../utils/breaks');
 
 module.exports = {
@@ -36,11 +36,35 @@ module.exports = {
     }
 
     const durationMs = unit === 'h' ? value * 60 * 60 * 1000 : value * 24 * 60 * 60 * 1000;
-    const endsAt = Date.now() + durationMs;
+    const startedAt = Date.now();
+    const endsAt = startedAt + durationMs;
 
     setBreak(user.id, endsAt);
 
+    const startTimestamp = Math.floor(startedAt / 1000);
     const endTimestamp = Math.floor(endsAt / 1000);
-    message.reply(`✅ ${user.username} is now on break until <t:${endTimestamp}:F> (<t:${endTimestamp}:R>).`);
+    const durationLabel = unit === 'h' ? `${value} hour${value !== 1 ? 's' : ''}` : `${value} day${value !== 1 ? 's' : ''}`;
+
+    const embed = new EmbedBuilder()
+      .setColor('#F1C40F')
+      .setAuthor({ name: `${user.username} • Break Started`, iconURL: user.displayAvatarURL({ dynamic: true }) })
+      .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
+      .setTitle('💤 Time to Rest')
+      .setDescription(
+        `${user} has officially clocked out for a well-deserved break.\n` +
+        `No hosting duties or quota pressure until they're back. 🌙`
+      )
+      .addFields(
+        { name: '⏳ Duration', value: `\`${durationLabel}\``, inline: true },
+        { name: '📅 Started', value: `<t:${startTimestamp}:t>`, inline: true },
+        { name: '\u200B', value: '\u200B', inline: true },
+        { name: '🔔 Returns', value: `<t:${endTimestamp}:F>`, inline: false },
+        { name: '⏱️ Time Remaining', value: `<t:${endTimestamp}:R>`, inline: false },
+      )
+      .setImage('https://i.imgur.com/6z7Y9Zb.png')
+      .setFooter({ text: `Break granted by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true }) })
+      .setTimestamp();
+
+    message.reply({ embeds: [embed] });
   },
 };
