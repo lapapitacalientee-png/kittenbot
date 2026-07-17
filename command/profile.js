@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const { loadData } = require('../utils/gamenights');
+const { getBreak } = require('../utils/breaks');
 
 module.exports = {
   data: {
@@ -20,6 +21,11 @@ module.exports = {
       ? 'No role'
       : member.roles.highest.name;
 
+    const breakEndsAt = getBreak(user.id);
+    const breakStatus = breakEndsAt
+      ? `🟡 On break until <t:${Math.floor(breakEndsAt / 1000)}:F> (<t:${Math.floor(breakEndsAt / 1000)}:R>)`
+      : '🟢 Not on break';
+
     const embed = new EmbedBuilder()
       .setColor(member.displayHexColor || '#5865F2')
       .setTitle(`${user.username}'s Profile`)
@@ -28,6 +34,7 @@ module.exports = {
         { name: 'Joined Server', value: `<t:${Math.floor(member.joinedTimestamp / 1000)}:F>`, inline: false },
         { name: 'Rank', value: highestRole, inline: true },
         { name: 'Gamenights', value: `${gamenights}`, inline: true },
+        { name: 'Break Status', value: breakStatus, inline: false },
       )
       .setFooter({ text: `User ID: ${user.id}` });
 
