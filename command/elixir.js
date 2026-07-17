@@ -1,4 +1,4 @@
-const { PermissionsBitField } = require('discord.js');
+const { PermissionsBitField, EmbedBuilder } = require('discord.js');
 const { addElixir } = require('../utils/elixir');
 
 module.exports = {
@@ -21,6 +21,15 @@ module.exports = {
     }
 
     const total = addElixir(user.id, amount);
-    message.reply(`🍥 Added ${amount} elixir to ${user.username}. Total: **${total} 🍥**`);
+
+    const embed = new EmbedBuilder()
+      .setColor('#FF6FB1')
+      .setAuthor({ name: user.username, iconURL: user.displayAvatarURL({ dynamic: true }) })
+      .setDescription(`🍥 **+${amount} elixir** added`)
+      .addFields({ name: 'New Balance', value: `${total} 🍥`, inline: true })
+      .setFooter({ text: `Given by ${message.author.username}` })
+      .setTimestamp();
+
+    message.reply({ embeds: [embed] });
   },
 };
