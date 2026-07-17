@@ -26,23 +26,23 @@ module.exports = {
       })
       .sort((a, b) => b.amount - a.amount);
 
-    const totalRPs = sorted.reduce((sum, e) => sum + e.amount, 0);
+    const totalGNs = sorted.reduce((sum, e) => sum + e.amount, 0);
     const hostersListed = sorted.length;
 
     const medals = ['🥇', '🥈', '🥉'];
 
     const lines = sorted.map((entry, i) => {
       const position = i < 3 ? medals[i] : `\`#${i + 1}\``;
-      return `${position} \`${entry.name}\` - **${entry.amount} RP** | ${entry.rank}`;
+      return `${position} \`${entry.name}\` - **${entry.amount} GN** | ${entry.rank}`;
     });
 
     const embed = new EmbedBuilder()
       .setColor('#F1C40F')
       .setDescription(
-        `**🏆 Overall RP Leaderboard**\n` +
-        `_Most hosted RPs of all time_\n` +
+        `**🏆 Overall GN Leaderboard**\n` +
+        `_Most gamenights hosted of all time_\n` +
         `_Last updated <t:${Math.floor(Date.now() / 1000)}:R>_\n\n` +
-        `**Total RPs Logged:** ${totalRPs}\n` +
+        `**Total GNs Logged:** ${totalGNs}\n` +
         `**Hosters Listed:** ${hostersListed}\n\n` +
         lines.join('\n')
       );
