@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const dataPath = path.join(__dirname, '..', 'data', 'elixir.json');
-const RATE_PER_GN = 2.5;
+const RATE_PER_GN = 5;
 
 function loadElixir() {
   if (!fs.existsSync(dataPath)) {
