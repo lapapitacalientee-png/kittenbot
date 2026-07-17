@@ -1,4 +1,4 @@
-const { PermissionsBitField } = require('discord.js');
+const { PermissionsBitField, EmbedBuilder } = require('discord.js');
 const { loadData, saveData } = require('../utils/gamenights');
 
 module.exports = {
@@ -17,12 +17,38 @@ module.exports = {
 
     const data = loadData();
     if (data[user.id] !== undefined) {
-      return message.reply(`ℹ️ ${user.username} is already on the leaderboard.`);
+      const alreadyEmbed = new EmbedBuilder()
+        .setColor('#E67E22')
+        .setAuthor({ name: user.username, iconURL: user.displayAvatarURL({ dynamic: true }) })
+        .setTitle('ℹ️ Already Listed')
+        .setDescription(`${user} is already on the hoster leaderboard with **${data[user.id]} GN**.`)
+        .setTimestamp();
+      return message.reply({ embeds: [alreadyEmbed] });
     }
 
     data[user.id] = 0;
     saveData(data);
 
-    message.reply(`✅ ${user.username} has been added to the hoster leaderboard.`);
+    const memberCount = Object.keys(data).length;
+
+    const embed = new EmbedBuilder()
+      .setColor('#3498DB')
+      .setAuthor({ name: `${user.username} • Welcome Aboard`, iconURL: user.displayAvatarURL({ dynamic: true }) })
+      .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
+      .setTitle('🎉 New Hoster Added')
+      .setDescription(
+        `${user} has officially joined the hoster leaderboard!\n` +
+        `Time to start hosting and racking up those GNs. 🚀`
+      )
+      .addFields(
+        { name: '🎮 Starting GNs', value: '`0`', inline: true },
+        { name: '👥 Total Hosters', value: `${memberCount}`, inline: true },
+        { name: '\u200B', value: '\u200B', inline: true },
+        { name: '📋 Next Steps', value: 'Use `j?profile` anytime to track progress, ratings, and quota status.', inline: false },
+      )
+      .setFooter({ text: `Added by ${message.author.username}`, iconURL: message.author.displayAvatarURL({ dynamic: true }) })
+      .setTimestamp();
+
+    message.reply({ embeds: [embed] });
   },
 };
