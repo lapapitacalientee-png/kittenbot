@@ -32,6 +32,8 @@ module.exports = {
     name: 'whatgn',
   },
   async execute(message, args) {
+    console.log('KEY LOADED:', process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.slice(0, 10) + '...' : 'UNDEFINED');
+
     const question = args.join(' ');
     if (!question) {
       return message.reply('❌ You must ask a question. Usage: `j?whatgn <question>`');
