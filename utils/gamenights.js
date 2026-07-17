@@ -22,4 +22,12 @@ function addGamenights(userId, amount) {
   return data[userId];
 }
 
-module.exports = { loadData, saveData, addGamenights };
+function removeGamenights(userId, amount) {
+  const data = loadData();
+  const current = data[userId] || 0;
+  data[userId] = Math.max(0, current - amount);
+  saveData(data);
+  return data[userId];
+}
+
+module.exports = { loadData, saveData, addGamenights, removeGamenights };
