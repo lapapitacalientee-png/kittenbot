@@ -1,5 +1,4 @@
 const { EmbedBuilder } = require('discord.js');
-const { loadData } = require('../utils/gamenights');
 
 const NUMBER_EMOJIS = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
 
@@ -22,10 +21,6 @@ module.exports = {
       return message.reply('❌ Maximum of 10 answers allowed.');
     }
 
-    const gnData = loadData();
-    const hosterIds = Object.keys(gnData);
-    const mentions = hosterIds.map((id) => `<@${id}>`).join(' ');
-
     const optionsText = answers
       .map((answer, i) => `${NUMBER_EMOJIS[i]} ${answer}`)
       .join('\n\n');
@@ -36,10 +31,7 @@ module.exports = {
       .setDescription(optionsText)
       .setFooter({ text: `Poll started by ${message.author.username}` });
 
-    const pollMessage = await message.channel.send({
-      content: hosterIds.length > 0 ? mentions : undefined,
-      embeds: [embed],
-    });
+    const pollMessage = await message.channel.send({ embeds: [embed] });
 
     for (let i = 0; i < answers.length; i++) {
       await pollMessage.react(NUMBER_EMOJIS[i]);
