@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 const dataPath = path.join(__dirname, '..', 'data', 'ai-limit.json');
-const DAILY_LIMIT = 90;
-const COOLDOWN_MS = 5 * 60 * 1000;
+const DAILY_LIMIT = 40;
+const COOLDOWN_MS = 1 * 60 * 1000;
 
 function loadLimits() {
   if (!fs.existsSync(dataPath)) {
