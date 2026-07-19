@@ -1,5 +1,6 @@
-const { PermissionsBitField } = require('discord.js');
+const { PermissionsBitField, EmbedBuilder } = require('discord.js');
 const { addWarn } = require('../utils/warns');
+const { getWarnLogChannel } = require('../utils/warnLogs');
 
 module.exports = {
   data: {
@@ -22,5 +23,24 @@ module.exports = {
 
     const activeWarns = addWarn(user.id, reason);
     message.reply(`⚠️ ${user.username} has been warned. Reason: **${reason}**. Active warns: **${activeWarns.length}**`);
+
+    const warnLogChannelId = getWarnLogChannel(message.guild.id);
+    if (warnLogChannelId) {
+      const logChannel = message.guild.channels.cache.get(warnLogChannelId);
+      if (logChannel) {
+        const logEmbed = new EmbedBuilder()
+          .setColor('#E74C3C')
+          .setAuthor({ name: user.username, iconURL: user.displayAvatarURL({ dynamic: true }) })
+          .setTitle('⚠️ Warn Issued')
+          .addFields(
+            { name: 'User', value: `<@${user.id}>`, inline: true },
+            { name: 'Issued By', value: `<@${message.author.id}>`, inline: true },
+            { name: 'Active Warns', value: `${activeWarns.length}`, inline: true },
+            { name: 'Reason', value: reason, inline: false },
+          )
+          .setTimestamp();
+        logChannel.send({ embeds: [logEmbed] }).catch(() => {});
+      }
+    }
   },
 };
