@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 const cooldowns = new Map();
 const COOLDOWN_MS = 30 * 1000;
@@ -29,9 +29,16 @@ module.exports = {
       .setColor('#2980B9')
       .setTitle('🔎 Mesh Search')
       .setDescription(`Search results for: **${query}**`)
-      .addFields({ name: '🔗 Search URL', value: searchUrl, inline: false })
-      .setFooter({ text: 'Opens the Roblox Creator Store filtered to Mesh Parts' });
+      .addFields({ name: '🔗 Copy Link', value: `\`\`\`${searchUrl}\`\`\``, inline: false })
+      .setFooter({ text: 'Roblox requires login to verify result counts — use the link to check manually' });
 
-    message.reply({ embeds: [embed] });
+    const button = new ButtonBuilder()
+      .setLabel('Open in Creator Store')
+      .setStyle(ButtonStyle.Link)
+      .setURL(searchUrl);
+
+    const row = new ActionRowBuilder().addComponents(button);
+
+    message.reply({ embeds: [embed], components: [row] });
   },
 };
